@@ -1,0 +1,73 @@
+{
+  "name": "electron-react-vampire",
+  "version": "0.1.0",
+  "author": "Mia Lemoine",
+  "description": "Vampire LARP Manager",
+  "private": true,
+  "homepage": "./",
+  "main": "./public/electron.js",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron:start": "concurrently -k \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electronmon .\"",
+    "electron:package:mac": "npm run build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:win": "npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "last 1 electron version"
+    ],
+    "development": [
+      "last 1 electron version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^6.4.0",
+    "cross-env": "^7.0.3",
+    "electron": "^16.0.2",
+    "electron-builder": "^22.14.5",
+    "electronmon": "^2.0.2",
+    "wait-on": "^6.0.0"
+  },
+  "build": {
+    "appId": "larp.vampire.manager",
+    "productName": "Vampire LARP Manager",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "deb"
+    }
+  },
+  "volta": {
+    "node": "16.13.0"
+  }
+}
