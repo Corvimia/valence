@@ -1,0 +1,78 @@
+{
+  "root": "apps/valence-electron",
+  "sourceRoot": "apps/valence-electron/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx-electron:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/valence-electron",
+        "main": "apps/valence-electron/src/main.ts",
+        "tsConfig": "apps/valence-electron/tsconfig.app.json",
+        "assets": [
+          "apps/valence-electron/src/assets"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/valence-electron/src/environments/environment.ts",
+              "with": "apps/valence-electron/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx-electron:execute",
+      "options": {
+        "buildTarget": "valence-electron:build"
+      }
+    },
+    "package": {
+      "executor": "nx-electron:package",
+      "options": {
+        "name": "valence-electron",
+        "frontendProject": "valence-ui",
+        "outputPath": "dist/apps",
+        "prepackageOnly": true
+      }
+    },
+    "make": {
+      "executor": "nx-electron:make",
+      "options": {
+        "name": "valence-electron",
+        "frontendProject": "valence-ui",
+        "outputPath": "dist/executables"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/valence-electron/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/valence-electron"
+      ],
+      "options": {
+        "jestConfig": "apps/valence-electron/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

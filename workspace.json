@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "projects": {
+    "valence-api": "apps/valence-api",
+    "valence-electron": "apps/valence-electron",
+    "valence-ui": "apps/valence-ui",
+    "valence-ui-e2e": "apps/valence-ui-e2e"
+  }
+}
