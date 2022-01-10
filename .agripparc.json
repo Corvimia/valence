@@ -1,0 +1,10 @@
+{
+    "$schema": "https://json.schemastore.org/agripparc-1.3.json",
+    "props": "ts",
+    "typescript": true,
+    "importReact": true,
+    "exportType": "named",
+    "declaration": "const",
+    "styling": "mui",
+    "baseDir": "./src/components"
+}
