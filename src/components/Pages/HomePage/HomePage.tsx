@@ -12,6 +12,8 @@ const todos: { [key: string]: string[] } = {
   ],
   "Technical": [
     "Auto create DB if it doesn't exist",
+    "Dummy Data for demo",
+    "Automate build creation on github",
     "Create component for List and Create",
     "Loading States",
     "Text validation to avoid errors",

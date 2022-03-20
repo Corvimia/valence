@@ -1,8 +1,39 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, protocol } = require("electron");
+const { app, BrowserWindow, protocol, ipcMain } = require("electron");
 const path = require("path");
 const url = require("url");
-require("../src/message-control/main");
+
+const sqlite3 = require('sqlite3').verbose();
+
+let db = new sqlite3.Database("./test.sqlite");
+
+// db.run(`
+//   DROP TABLE IF EXISTS Player;
+// `);
+// db.run(`
+//   DROP TABLE IF EXISTS Character;
+// `);
+// db.run(`
+//   CREATE TABLE Player (
+//      id integer primary key,
+//      name text
+//      );
+// `);
+// db.run(`
+//   CREATE TABLE Character (
+//      id integer primary key,
+//      name text,
+//      playerId integer
+//      );
+// `);
+
+ipcMain.on("sql", (event, query) => {
+  setTimeout(() => {
+    db.all(query, [], (error, data) => {
+      event.reply('sql', { error, data });
+    })
+  }, 1);
+})
 
 // Create the native browser window.
 function createWindow() {
