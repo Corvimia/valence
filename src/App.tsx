@@ -8,6 +8,7 @@ import './App.css';
 import { send } from "./message-control/renderer";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { CharacterPage } from "./components/Pages/CharacterPage";
+import { HomePage } from "./components/Pages/HomePage";
 
 function App() {
 
@@ -30,7 +31,7 @@ function App() {
               <button onClick={() => send("sql", text).then(_ => console.log(_))}>Send</button>
             </header>
             <Routes>
-              <Route path="/" element={<div>Test Home Page</div>}/>
+              <Route path="/" element={<HomePage/>}/>
               <Route path="/players" element={<PlayerPage/>}/>
               <Route path="/characters" element={<CharacterPage/>}/>
             </Routes>
