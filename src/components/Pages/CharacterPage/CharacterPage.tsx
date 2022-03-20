@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
+  IconButton, MenuItem, Select,
   Table,
   TableBody,
   TableCell,
@@ -19,23 +19,31 @@ import {
 import { useController, useForm } from "react-hook-form";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { Player } from "../PlayerPage";
 
 
-export interface Player {
+interface Character {
   id: number;
   name: string;
+  playerId: number;
 }
 
-export interface PlayerPageProps {
+export interface CharacterPageProps {
 }
 
-export const PlayerPage: React.VFC<PlayerPageProps> = () => {
+export const CharacterPage: React.VFC<CharacterPageProps> = () => {
 
   const { handleSubmit, reset, control, setValue } = useForm({
     defaultValues: {
       id: 0,
       name: "",
+      playerId: 0,
     },
+  });
+
+  const idControl = useController({
+    name: "id",
+    control: control,
   });
 
   const nameControl = useController({
@@ -44,25 +52,29 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
     rules: { required: true }
   });
 
-  const idControl = useController({
-    name: "id",
+  const playerControl = useController({
+    name: "playerId",
     control: control,
-  })
+    rules: { required: true },
+  });
 
   const [render, setRender] = useState<number>(0);
+
   const update = () => setRender(r => r + 1);
+
+  const { data: characters } = useSql<Character[]>("SELECT * FROM Character", [render]);
 
   const { data: players } = useSql<Player[]>("SELECT * FROM Player", [render]);
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const createPlayer = (player: Player) => {
+  const createCharacter = (character: Character) => {
 
     let sql = '';
-    if(player.id){
-      sql = `UPDATE Player SET name = '${player.name}' WHERE id = ${player.id}`;
+    if(character.id){
+      sql = `UPDATE Character SET name = '${character.name}' WHERE id = ${character.id}`;
     } else {
-      sql = `INSERT INTO Player (name) VALUES ('${player.name}')`;
+      sql = `INSERT INTO Character (name, playerId) VALUES ('${character.name}', ${character.playerId})`;
     }
 
     send("sql", sql).then(({ error }) => {
@@ -75,8 +87,8 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
     })
   }
 
-  const deletePlayer = (playerId: number) => {
-    send("sql", `DELETE FROM Player WHERE id = ${playerId}`).then(({ error }) => {
+  const deleteCharacter = (characterId: number) => {
+    send("sql", `DELETE FROM Character WHERE id = ${characterId}`).then(({ error }) => {
       if (error) {
         alert(error);
       } else {
@@ -85,9 +97,10 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
     })
   }
 
-  const editPlayer = (player: Player) => {
-    setValue("id", player.id);
-    setValue("name", player.name);
+  const editCharacter = (character: Character) => {
+    setValue("id", character.id);
+    setValue("name", character.name);
+    setValue("playerId", character.playerId);
     openDialog();
   }
 
@@ -99,14 +112,14 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
 
   return (
     <>
-      <Typography variant="h3">Players</Typography>
-      <Button variant="outlined" onClick={openDialog}>Add Player</Button>
+      <Typography variant="h3">Characters</Typography>
+      <Button variant="outlined" onClick={openDialog}>Add Character</Button>
       <Dialog open={dialogOpen} onClose={closeDialog}>
-        <form onSubmit={handleSubmit(createPlayer)}>
-          <DialogTitle>New Player</DialogTitle>
+        <form onSubmit={handleSubmit(createCharacter)}>
+          <DialogTitle>New Character</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Create a new player
+              Create a new character
             </DialogContentText>
 
             <TextField
@@ -115,6 +128,14 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
               value={nameControl.field.value}
               onChange={nameControl.field.onChange}
             />
+            <br/>
+            <Select
+              value={playerControl.field.value}
+              label="Player"
+              onChange={playerControl.field.onChange}>
+              <MenuItem value={0}>None</MenuItem>
+              {players?.map(player => <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>)}
+            </Select>
           </DialogContent>
           <DialogActions>
             <Button onClick={closeDialog}>Cancel</Button>
@@ -127,19 +148,21 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
+            <TableCell>Player ID</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {players?.map(player =>
-            <TableRow key={player.id}>
-              <TableCell>{player.id}</TableCell>
-              <TableCell>{player.name}</TableCell>
+          {characters?.map(character =>
+            <TableRow key={character.id}>
+              <TableCell>{character.id}</TableCell>
+              <TableCell>{character.name}</TableCell>
+              <TableCell>{character.playerId}</TableCell>
               <TableCell>
-                <IconButton onClick={() => editPlayer(player)}>
+                <IconButton onClick={() => editCharacter(character)}>
                   <EditIcon/>
                 </IconButton>
-                <IconButton onClick={() => deletePlayer(player.id)}>
+                <IconButton onClick={() => deleteCharacter(character.id)}>
                   <DeleteIcon/>
                 </IconButton>
               </TableCell>

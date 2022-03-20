@@ -7,6 +7,7 @@ import { PlayerPage } from "./components/Pages/PlayerPage";
 import './App.css';
 import { send } from "./message-control/renderer";
 import { createTheme, ThemeProvider } from "@mui/material";
+import { CharacterPage } from "./components/Pages/CharacterPage";
 
 function App() {
 
@@ -23,12 +24,15 @@ function App() {
           <Sidebar/>
           <main>
             <header>
+              Debug Panel:
+              <br/>
               <input value={text} onChange={e => setText(e.target.value)} type="text"/>
               <button onClick={() => send("sql", text).then(_ => console.log(_))}>Send</button>
             </header>
             <Routes>
-              <Route path="/" element={<div>home</div>}/>
+              <Route path="/" element={<div>Test Home Page</div>}/>
               <Route path="/players" element={<PlayerPage/>}/>
+              <Route path="/characters" element={<CharacterPage/>}/>
             </Routes>
           </main>
         </BrowserRouter>
