@@ -1,6 +1,7 @@
 {
   "version": 2,
   "projects": {
+    "valence-api": "packages/valence-api",
     "valence-electron": "packages/valence-electron",
     "valence-ui": "packages/valence-ui",
     "valence-ui-e2e": "packages/valence-ui-e2e"
