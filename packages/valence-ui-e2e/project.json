@@ -1,0 +1,28 @@
+{
+  "root": "packages/valence-ui-e2e",
+  "sourceRoot": "packages/valence-ui-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "packages/valence-ui-e2e/cypress.json",
+        "devServerTarget": "valence-ui:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "valence-ui:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/valence-ui-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["valence-ui"]
+}
