@@ -1,6 +1,6 @@
 {
-  "root": "packages/valence-electron",
-  "sourceRoot": "packages/valence-electron/src",
+  "root": "apps/valence-electron",
+  "sourceRoot": "apps/valence-electron/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -9,11 +9,11 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/valence-electron",
-        "main": "packages/valence-electron/src/main.ts",
-        "tsConfig": "packages/valence-electron/tsconfig.app.json",
+        "outputPath": "dist/apps/valence-electron",
+        "main": "apps/valence-electron/src/main.ts",
+        "tsConfig": "apps/valence-electron/tsconfig.app.json",
         "assets": [
-          "packages/valence-electron/src/assets"
+          "apps/valence-electron/src/assets"
         ]
       },
       "configurations": {
@@ -23,8 +23,8 @@
           "inspect": false,
           "fileReplacements": [
             {
-              "replace": "packages/valence-electron/src/environments/environment.ts",
-              "with": "packages/valence-electron/src/environments/environment.prod.ts"
+              "replace": "apps/valence-electron/src/environments/environment.ts",
+              "with": "apps/valence-electron/src/environments/environment.prod.ts"
             }
           ]
         }
@@ -41,7 +41,7 @@
       "options": {
         "name": "valence-electron",
         "frontendProject": "valence-ui",
-        "outputPath": "dist/packages",
+        "outputPath": "dist/apps",
         "prepackageOnly": true
       }
     },
@@ -60,17 +60,17 @@
       ],
       "options": {
         "lintFilePatterns": [
-          "packages/valence-electron/**/*.ts"
+          "apps/valence-electron/**/*.ts"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": [
-        "coverage/packages/valence-electron"
+        "coverage/apps/valence-electron"
       ],
       "options": {
-        "jestConfig": "packages/valence-electron/jest.config.js",
+        "jestConfig": "apps/valence-electron/jest.config.js",
         "passWithNoTests": true
       }
     }

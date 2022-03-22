@@ -6,7 +6,7 @@
       "node"
     ],
     "paths": {
-      "@valence/api": ["packages/valence-api/index.ts"],
+      "@valence/api": ["apps/valence-api/index.ts"],
     }
   },
   "exclude": [

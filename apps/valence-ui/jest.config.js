@@ -6,5 +6,5 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/packages/valence-ui',
+  coverageDirectory: '../../coverage/apps/valence-ui',
 };

@@ -1,6 +1,6 @@
 {
-  "root": "packages/valence-ui",
-  "sourceRoot": "packages/valence-ui/src",
+  "root": "apps/valence-ui",
+  "sourceRoot": "apps/valence-ui/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,15 +11,15 @@
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
-        "outputPath": "dist/packages/valence-ui",
-        "index": "packages/valence-ui/src/index.html",
+        "outputPath": "dist/apps/valence-ui",
+        "index": "apps/valence-ui/src/index.html",
         "baseHref": "/",
-        "main": "packages/valence-ui/src/main.tsx",
-        "polyfills": "packages/valence-ui/src/polyfills.ts",
-        "tsConfig": "packages/valence-ui/tsconfig.app.json",
+        "main": "apps/valence-ui/src/main.tsx",
+        "polyfills": "apps/valence-ui/src/polyfills.ts",
+        "tsConfig": "apps/valence-ui/tsconfig.app.json",
         "assets": [
-          "packages/valence-ui/src/favicon.ico",
-          "packages/valence-ui/src/assets"
+          "apps/valence-ui/src/favicon.ico",
+          "apps/valence-ui/src/assets"
         ],
         "styles": [],
         "scripts": [],
@@ -29,8 +29,8 @@
         "production": {
           "fileReplacements": [
             {
-              "replace": "packages/valence-ui/src/environments/environment.ts",
-              "with": "packages/valence-ui/src/environments/environment.prod.ts"
+              "replace": "apps/valence-ui/src/environments/environment.ts",
+              "with": "apps/valence-ui/src/environments/environment.prod.ts"
             }
           ],
           "optimization": true,
@@ -47,7 +47,7 @@
       "options": {
         "buildTarget": "valence-ui:build",
         "hmr": true,
-        "proxyConfig": "packages/valence-ui/proxy.conf.json"
+        "proxyConfig": "apps/valence-ui/proxy.conf.json"
       },
       "configurations": {
         "production": {
@@ -63,17 +63,17 @@
       ],
       "options": {
         "lintFilePatterns": [
-          "packages/valence-ui/**/*.{ts,tsx,js,jsx}"
+          "apps/valence-ui/**/*.{ts,tsx,js,jsx}"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": [
-        "coverage/packages/valence-ui"
+        "coverage/apps/valence-ui"
       ],
       "options": {
-        "jestConfig": "packages/valence-ui/jest.config.js",
+        "jestConfig": "apps/valence-ui/jest.config.js",
         "passWithNoTests": true
       }
     }
