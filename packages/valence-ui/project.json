@@ -5,7 +5,9 @@
   "targets": {
     "build": {
       "executor": "@nrwl/web:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
@@ -44,7 +46,8 @@
       "executor": "@nrwl/web:dev-server",
       "options": {
         "buildTarget": "valence-ui:build",
-        "hmr": true
+        "hmr": true,
+        "proxyConfig": "packages/valence-ui/proxy.conf.json"
       },
       "configurations": {
         "production": {
@@ -55,14 +58,20 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["packages/valence-ui/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "packages/valence-ui/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/valence-ui"],
+      "outputs": [
+        "coverage/packages/valence-ui"
+      ],
       "options": {
         "jestConfig": "packages/valence-ui/jest.config.js",
         "passWithNoTests": true

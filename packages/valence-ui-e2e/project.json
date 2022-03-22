@@ -17,12 +17,18 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["packages/valence-ui-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": [
+          "packages/valence-ui-e2e/**/*.{js,ts}"
+        ]
       }
     }
   },
   "tags": [],
-  "implicitDependencies": ["valence-ui"]
+  "implicitDependencies": [
+    "valence-ui"
+  ]
 }
