@@ -18,13 +18,11 @@ import {
 import { useController, useForm } from "react-hook-form";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import useSWR, { useSWRConfig } from "swr";
+import { fetcher } from "../../../api";
+import axios from "axios";
 
 const send = (_: string, _2: string) => Promise.resolve({} as any);
-
-function useSql<S>(_: string, deps?: React.DependencyList | undefined): { data: S } {
-  const [data, setData] = useState<S>(null as any);
-  return { data };
-}
 
 export interface Player {
   id: number;
@@ -54,39 +52,73 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
     control: control
   });
 
-  const [render, setRender] = useState<number>(0);
-  const update = () => setRender(r => r + 1);
-
-  const { data: players } = useSql<Player[]>("SELECT * FROM Player", [render]);
+  const { data: players = [], error, mutate } = useSWR<Player[]>("/api/players", fetcher);
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const createPlayer = (player: Player) => {
+  const updatePlayer = async (player: Player) => {
+    await mutate(async () => {
+      try {
+        const { data } = await axios.put<Player>(`/api/players/${player.id}`, player);
 
-    let sql = "";
-    if (player.id) {
-      sql = `UPDATE Player SET name = '${player.name}' WHERE id = ${player.id}`;
-    } else {
-      sql = `INSERT INTO Player (name) VALUES ('${player.name}')`;
-    }
-
-    send("sql", sql).then(({ error }) => {
-      if (error) {
-        alert(error);
-      } else {
         closeDialog();
-        update();
+
+        return [data];
+      } catch (e) {
+        alert(e);
       }
+      return [];
+    }, {
+      optimisticData: [...players],
+      rollbackOnError: true,
+      populateCache: newItem => {
+        return [...players];
+      },
+      revalidate: true
+    });
+  }
+
+  const createPlayer = async (player: Player) => {
+    if(player.id){
+      return updatePlayer(player);
+    }
+    await mutate(async () => {
+      try {
+        const { data } = await axios.post<Player>("/api/players", player);
+
+        closeDialog();
+
+        return [data];
+      } catch (e) {
+        alert(e);
+      }
+      return [];
+    }, {
+      optimisticData: [...players, player],
+      rollbackOnError: true,
+      populateCache: newItem => {
+        return [...players, ...newItem];
+      },
+      revalidate: true
     });
   };
 
-  const deletePlayer = (playerId: number) => {
-    send("sql", `DELETE FROM Player WHERE id = ${playerId}`).then(({ error }) => {
-      if (error) {
-        alert(error);
-      } else {
-        update();
+  const deletePlayer = async (playerId: number) => {
+    await mutate(async () => {
+      try {
+        await axios.delete<Player>(`/api/players/${playerId}`);
+        return [];
+      } catch (e) {
+        alert(e);
       }
+      return [];
+    }, {
+      optimisticData: [...players],
+      rollbackOnError: true,
+      populateCache: () => {
+        return [...players];
+      },
+      revalidate: true
     });
   };
 
@@ -137,7 +169,7 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
         </TableHead>
         <TableBody>
           {players?.map(player =>
-            <TableRow key={player.id}>
+            <TableRow key={player.id ?? "new"}>
               <TableCell>{player.id}</TableCell>
               <TableCell>{player.name}</TableCell>
               <TableCell>

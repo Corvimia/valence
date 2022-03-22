@@ -1,17 +1,5 @@
 {
   "/api": {
-    "target": "http://localhost:3000",
-    "secure": false
-  },
-  "/valence-electron-api": {
-    "target": "http://localhost:3000",
-    "secure": false
-  },
-  "/valence-api-test1-api": {
-    "target": "http://localhost:3333",
-    "secure": false
-  },
-  "/valence-api-api": {
     "target": "http://localhost:3333",
     "secure": false
   }

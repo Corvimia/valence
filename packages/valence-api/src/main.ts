@@ -4,12 +4,14 @@
  */
 
 import * as express from 'express';
+import routes from "./app/routes";
 
 const app = express();
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to valence-api!' });
-});
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use('/api', routes);
 
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {
