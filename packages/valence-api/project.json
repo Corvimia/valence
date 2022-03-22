@@ -1,14 +1,14 @@
 {
   "root": "packages/valence-api",
   "sourceRoot": "packages/valence-api/src",
-  "projectType": "application",
+  "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/valence-api",
-        "main": "packages/valence-api/src/main.ts",
+        "main": "packages/valence-api/src/index.ts",
         "tsConfig": "packages/valence-api/tsconfig.app.json",
         "assets": ["packages/valence-api/src/assets"]
       },

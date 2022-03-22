@@ -1,9 +1,10 @@
 {
   "name": "valence",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-api\""
+    "start": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-api\"",
+    "electron": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-electron\""
   },
   "private": true,
   "devDependencies": {

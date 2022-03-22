@@ -1,8 +1,8 @@
-import SquirrelEvents from './app/events/squirrel.events';
-import ElectronEvents from './app/events/electron.events';
-import UpdateEvents from './app/events/update.events';
-import { app, BrowserWindow } from 'electron';
-import App from './app/app';
+import SquirrelEvents from "./app/events/squirrel.events";
+import ElectronEvents from "./app/events/electron.events";
+import { app, BrowserWindow } from "electron";
+import { server } from "@valence/api";
+import App from "./app/app";
 
 export default class Main {
   static initialize() {
@@ -13,6 +13,7 @@ export default class Main {
   }
 
   static bootstrapApp() {
+    server();
     App.main(app, BrowserWindow);
   }
 
