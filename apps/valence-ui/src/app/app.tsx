@@ -8,6 +8,8 @@ import { Sidebar } from "./features/core/sidebar";
 import { HomePage } from "./features/home/home-page";
 import { CharacterListPage } from "./features/character/character-list-page";
 import { PlayerListPage } from "./features/player/player-list-page";
+import { CharacterEditPage } from "./features/character/character-edit-page";
+import { CharacterCreatePage } from "./features/character/character-create-page";
 
 export function App() {
 
@@ -23,9 +25,15 @@ export function App() {
           <Sidebar />
           <main>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/players" element={<PlayerListPage />} />
-              <Route path="/characters" element={<CharacterListPage />} />
+              <Route path="/">
+                <Route path="" element={<HomePage />} />
+                <Route path="players" element={<PlayerListPage />} />
+                <Route path="characters">
+                  <Route path="" element={<CharacterListPage />} />
+                  <Route path="new" element={<CharacterCreatePage />} />
+                  <Route path=":id" element={<CharacterEditPage />} />
+                </Route>
+              </Route>
             </Routes>
           </main>
         </BrowserRouter>

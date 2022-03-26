@@ -5,6 +5,7 @@ import controller from "./controller";
 const router = express.Router();
 
 router.get("/", asyncHandler(controller.list));
+router.get("/:characterId", asyncHandler(controller.get));
 router.post("/", asyncHandler(controller.create));
 router.put("/:characterId", asyncHandler(controller.replace));
 router.delete("/:characterId", asyncHandler(controller.remove));

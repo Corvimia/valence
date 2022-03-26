@@ -12,6 +12,18 @@ const list: RequestHandler = async (req, res) => {
   res.send(characters);
 };
 
+const get: RequestHandler = async (req, res) => {
+  const character = await prisma.character.findFirst({
+    where: {
+      id: Number(req.params.characterId),
+    },
+    include: {
+      player: true,
+    },
+  });
+  res.send(character);
+};
+
 const create: RequestHandler = async (req, res) => {
   const character = await prisma.character.create({
     data: {
@@ -55,6 +67,7 @@ const remove: RequestHandler = async (req, res) => {
 
 export default {
   list,
+  get,
   create,
   replace,
   remove
