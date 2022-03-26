@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
+  IconButton, MenuItem, Select,
   Table,
   TableBody,
   TableCell,
@@ -18,27 +18,33 @@ import {
 import { useController, useForm } from "react-hook-form";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import useSWR, { useSWRConfig } from "swr";
-import { fetcher } from "../../../api";
+import useSWR from "swr";
+import { fetcher } from "../../api";
 import axios from "axios";
+import Player from "../player/model";
 
-const send = (_: string, _2: string) => Promise.resolve({} as any);
-
-export interface Player {
+interface Character {
   id: number;
   name: string;
+  playerId: number;
 }
 
-export interface PlayerPageProps {
+export interface CharacterPageProps {
 }
 
-export const PlayerPage: React.VFC<PlayerPageProps> = () => {
+export const CharacterListPage: React.VFC<CharacterPageProps> = () => {
 
   const { handleSubmit, reset, control, setValue } = useForm({
     defaultValues: {
       id: 0,
-      name: ""
+      name: "",
+      playerId: 0
     }
+  });
+
+  const idControl = useController({
+    name: "id",
+    control: control
   });
 
   const nameControl = useController({
@@ -47,19 +53,22 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
     rules: { required: true }
   });
 
-  const idControl = useController({
-    name: "id",
-    control: control
+  const playerControl = useController({
+    name: "playerId",
+    control: control,
+    rules: { required: true }
   });
 
-  const { data: players = [], error, mutate } = useSWR<Player[]>("/api/players", fetcher);
+
+  const { data: characters = [], mutate } = useSWR<Character[]>("/api/characters", fetcher);
+  const { data: players = [] } = useSWR<Player[]>("/api/players", fetcher);
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const updatePlayer = async (player: Player) => {
+  const updateCharacter = async (character: Character) => {
     await mutate(async () => {
       try {
-        const { data } = await axios.put<Player>(`/api/players/${player.id}`, player);
+        const { data } = await axios.put<Character>(`/api/characters/${character.id}`, character);
 
         closeDialog();
 
@@ -69,62 +78,63 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
       }
       return [];
     }, {
-      optimisticData: [...players],
+      optimisticData: [...characters],
       rollbackOnError: true,
       populateCache: newItem => {
-        return [...players];
-      },
-      revalidate: true
-    });
-  }
-
-  const createPlayer = async (player: Player) => {
-    if(player.id){
-      return updatePlayer(player);
-    }
-    await mutate(async () => {
-      try {
-        const { data } = await axios.post<Player>("/api/players", player);
-
-        closeDialog();
-
-        return [data];
-      } catch (e) {
-        alert(e);
-      }
-      return [];
-    }, {
-      optimisticData: [...players, player],
-      rollbackOnError: true,
-      populateCache: newItem => {
-        return [...players, ...newItem];
+        return [...characters];
       },
       revalidate: true
     });
   };
 
-  const deletePlayer = async (playerId: number) => {
+  const createCharacter = async (character: Character) => {
+    if (character.id) {
+      return updateCharacter(character);
+    }
     await mutate(async () => {
       try {
-        await axios.delete<Player>(`/api/players/${playerId}`);
+        const { data } = await axios.post<Character>("/api/characters", character);
+
+        closeDialog();
+
+        return [data];
+      } catch (e) {
+        alert(e);
+      }
+      return [];
+    }, {
+      optimisticData: [...characters, character],
+      rollbackOnError: true,
+      populateCache: newItem => {
+        return [...characters, ...newItem];
+      },
+      revalidate: true
+    });
+  };
+
+  const deleteCharacter = async (characterId: number) => {
+    await mutate(async () => {
+      try {
+        await axios.delete<Player>(`/api/characters/${characterId}`);
         return [];
       } catch (e) {
         alert(e);
       }
       return [];
     }, {
-      optimisticData: [...players],
+      optimisticData: [...characters],
       rollbackOnError: true,
       populateCache: () => {
-        return [...players];
+        return [...characters];
       },
       revalidate: true
     });
   };
 
-  const editPlayer = (player: Player) => {
-    setValue("id", player.id);
-    setValue("name", player.name);
+  const editCharacter = (character: Character) => {
+    setValue("id", character.id);
+    setValue("name", character.name);
+    setValue("playerId", character.playerId);
     openDialog();
   };
 
@@ -136,14 +146,14 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
 
   return (
     <>
-      <Typography variant="h3">Players</Typography>
-      <Button variant="outlined" onClick={openDialog}>Add Player</Button>
+      <Typography variant="h3">Characters</Typography>
+      <Button variant="outlined" onClick={openDialog}>Add Character</Button>
       <Dialog open={dialogOpen} onClose={closeDialog}>
-        <form onSubmit={handleSubmit(createPlayer)}>
-          <DialogTitle>New Player</DialogTitle>
+        <form onSubmit={handleSubmit(createCharacter)}>
+          <DialogTitle>New Character</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Create a new player
+              Create a new character
             </DialogContentText>
 
             <TextField
@@ -152,6 +162,14 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
               value={nameControl.field.value}
               onChange={nameControl.field.onChange}
             />
+            <br />
+            <Select
+              value={playerControl.field.value}
+              label="Player"
+              onChange={playerControl.field.onChange}>
+              <MenuItem value={0}>None</MenuItem>
+              {players?.map(player => <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>)}
+            </Select>
           </DialogContent>
           <DialogActions>
             <Button onClick={closeDialog}>Cancel</Button>
@@ -164,19 +182,21 @@ export const PlayerPage: React.VFC<PlayerPageProps> = () => {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
+            <TableCell>Player ID</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {players?.map(player =>
-            <TableRow key={player.id ?? "new"}>
-              <TableCell>{player.id}</TableCell>
-              <TableCell>{player.name}</TableCell>
+          {characters?.map(character =>
+            <TableRow key={character.id}>
+              <TableCell>{character.id}</TableCell>
+              <TableCell>{character.name}</TableCell>
+              <TableCell>{character.playerId}</TableCell>
               <TableCell>
-                <IconButton onClick={() => editPlayer(player)}>
+                <IconButton onClick={() => editCharacter(character)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton onClick={() => deletePlayer(player.id)}>
+                <IconButton onClick={() => deleteCharacter(character.id)}>
                   <DeleteIcon />
                 </IconButton>
               </TableCell>

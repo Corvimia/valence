@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, {} from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Sidebar } from "./components/Sidebar";
-import { PlayerPage } from "./components/Pages/PlayerPage";
+
 
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { CharacterPage } from "./components/Pages/CharacterPage";
-import { HomePage } from "./components/Pages/HomePage";
+import { Sidebar } from "./features/core/sidebar";
+import { HomePage } from "./features/home/home-page";
+import { CharacterListPage } from "./features/character/character-list-page";
+import { PlayerListPage } from "./features/player/player-list-page";
 
 export function App() {
 
@@ -23,8 +24,8 @@ export function App() {
           <main>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/players" element={<PlayerPage />} />
-              <Route path="/characters" element={<CharacterPage />} />
+              <Route path="/players" element={<PlayerListPage />} />
+              <Route path="/characters" element={<CharacterListPage />} />
             </Routes>
           </main>
         </BrowserRouter>

@@ -10,16 +10,29 @@ const db = new sqlite3.Database("test.db", err => {
   console.log("Successful connection to the database 'test.db'");
 });
 
-const sql_create = `CREATE TABLE IF NOT EXISTS Players (
+const createPlayersSql = `CREATE TABLE IF NOT EXISTS Players (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL
 );`;
 
-db.run(sql_create, err => {
+db.run(createPlayersSql, err => {
   if (err) {
     return console.error(err.message);
   }
   console.log("Successful creation of the 'Players' table");
+});
+
+const createCharactersSql = `CREATE TABLE IF NOT EXISTS Characters (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  playerId INTEGER
+);`;
+
+db.run(createCharactersSql, err => {
+  if (err) {
+    return console.error(err.message);
+  }
+  console.log("Successful creation of the 'Characters' table");
 });
 
 function all<S>(query, args): Promise<S> {
