@@ -20,7 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import useSWR, {} from "swr";
 import { api, fetcher } from "../../api";
-import { Skill } from "@prisma/client";
+import { Skill } from "./model";
 
 export interface SkillPageProps {
 }

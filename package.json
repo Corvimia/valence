@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "start": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-api\"",
-    "electron": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-electron\""
+    "electron": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-electron\"",
+    "build": "nx build valence-ui && nx build valence-electron",
+    "package": "npm run build && nx make valence-electron"
   },
   "private": true,
   "devDependencies": {

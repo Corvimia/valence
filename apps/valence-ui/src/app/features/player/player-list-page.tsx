@@ -20,8 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import useSWR, {} from "swr";
 import { api, fetcher } from "../../api";
-import { Player } from "@prisma/client";
-import { PlayerWithCharacters } from "./model";
+import { Player, PlayerWithCharacters } from "./model";
 
 export interface PlayerPageProps {
 }

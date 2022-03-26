@@ -1,3 +1,8 @@
 {
-  "$schema": "../../../../../node_modules/nx-electron/src/validation/maker.schema.json"
+  "$schema": "../../../../../node_modules/nx-electron/src/validation/maker.schema.json",
+  "extraResources": [
+    "prisma/test.db",
+    "node_modules/.prisma/**/*",
+    "node_modules/@prisma/client/**/*"
+  ]
 }

@@ -4,7 +4,8 @@ import { api, fetcher } from "../../api";
 import useSWR, {} from "swr";
 import { Button, MenuItem, Select, TextField } from "@mui/material";
 import { useEffect } from "react";
-import { Character, Player } from "@prisma/client";
+import { Player } from "../player/model";
+import { Character } from "./model";
 
 export interface CharacterEditPageProps {
 }

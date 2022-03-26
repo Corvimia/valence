@@ -1,7 +1,11 @@
-import { Prisma } from '@prisma/client'
-
-const characterWithPlayer = Prisma.validator<Prisma.CharacterArgs>()({
-  include: { player: true },
-})
-
-export type CharacterWithPlayer = Prisma.CharacterGetPayload<typeof characterWithPlayer>
+export type Character = {
+  id: number;
+  name: string;
+  playerId: number;
+}
+export type CharacterWithPlayer = Character & {
+  player: {
+    id: number;
+    name: string;
+  };
+}

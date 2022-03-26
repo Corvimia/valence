@@ -72,7 +72,6 @@ export default class App {
         preload: join(__dirname, 'preload.js'),
       },
     });
-    App.mainWindow.setMenu(null);
     App.mainWindow.center();
 
     // if main window is ready to show, close the splash window and show the main window

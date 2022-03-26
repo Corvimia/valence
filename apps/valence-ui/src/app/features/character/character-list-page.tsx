@@ -20,8 +20,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import useSWR from "swr";
 import { api, fetcher } from "../../api";
 import { Link } from "react-router-dom";
-import { Character, Player } from "@prisma/client";
-import { CharacterWithPlayer } from "./model";
+import { Character, CharacterWithPlayer } from "./model";
+import { Player } from "../player/model";
 
 export interface CharacterPageProps {
 }

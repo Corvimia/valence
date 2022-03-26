@@ -4,8 +4,7 @@ import { api, fetcher } from "../../api";
 import useSWR, {} from "swr";
 import { Button, Grid, MenuItem, Select, TextField } from "@mui/material";
 import { useEffect } from "react";
-import { Character, Player } from "@prisma/client";
-import { CharacterWithPlayer } from "./model";
+import { Character, CharacterWithPlayer } from "./model";
 
 const attributes = [
   ["intelligence", "strength", "presence"],
