@@ -24,6 +24,9 @@ export const Sidebar: React.VFC<SidebarProps> = () => {
 				<ListItem button onClick={() => navigate("/characters")}>
 					<ListItemText>Characters</ListItemText>
 				</ListItem>
+        <ListItem button onClick={() => navigate("/skills")}>
+          <ListItemText>Skills</ListItemText>
+        </ListItem>
 			</List>
 		</Drawer>
 	);

@@ -1,11 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useController, useForm } from "react-hook-form";
 import { api, fetcher } from "../../api";
-import Player from "../player/model";
 import useSWR, {} from "swr";
-import Character from "./model";
-import { Button, MenuItem, Select, TextField } from "@mui/material";
+import { Button, Grid, MenuItem, Select, TextField } from "@mui/material";
 import { useEffect } from "react";
+import { Character, Player } from "@prisma/client";
+import { CharacterWithPlayer } from "./model";
+
+const attributes = [
+  ["intelligence", "strength", "presence"],
+  ["wits", "dexterity", "manipulation"],
+  ["resolve", "stamina", "composure"],
+]
 
 export interface CharacterEditPageProps {
 }
@@ -13,9 +19,10 @@ export interface CharacterEditPageProps {
 export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
   const { id } = useParams();
 
-  const { data: players = [] } = useSWR<Player[]>("/api/players", fetcher);
-
-  const { data: character = {} as Character, mutate } = useSWR<Character>(`/api/characters/${id}`, fetcher);
+  const {
+    data: character = {} as CharacterWithPlayer,
+    mutate
+  } = useSWR<CharacterWithPlayer>(`/api/characters/${id}`, fetcher);
 
   useEffect(() => {
     setValue("id", character?.id);
@@ -50,14 +57,13 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
 
   const updateCharacter = async (newCharacter: Character) => {
     await mutate(async () => {
-      const { data } = await api.put<Character>(`/api/characters/${newCharacter.id}`, newCharacter);
+      const { data } = await api.put<CharacterWithPlayer>(`/api/characters/${newCharacter.id}`, newCharacter);
 
       return data;
     }, {
-      optimisticData: newCharacter,
       rollbackOnError: true,
       populateCache: newItem => {
-        return newCharacter;
+        return newItem;
       },
       revalidate: true
     });
@@ -65,13 +71,9 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
 
   return (
     <div>
-      <h1>Character Edit Page</h1>
+      <h1>Edit {nameControl.field.value}</h1>
       <form onSubmit={handleSubmit(updateCharacter)}>
         <div>
-          <p>
-            Edit Character
-          </p>
-
           <p>
             Player: {character?.player?.name}
           </p>
@@ -83,6 +85,28 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
             onChange={nameControl.field.onChange}
           />
         </div>
+
+        {/*<div>*/}
+        {/*  <h3>Attributes</h3>*/}
+        {/*  <Grid container>*/}
+        {/*    <Grid item>*/}
+        {/*      {attributes.map(row => (*/}
+        {/*        <Grid container key={`${row}`}>*/}
+        {/*          {row.map(attribute => (*/}
+        {/*            <Grid item xs={4} key={attribute}>*/}
+        {/*              <TextField*/}
+        {/*                label={attribute}*/}
+        {/*                variant="filled"*/}
+        {/*                type="number"*/}
+        {/*              />*/}
+        {/*            </Grid>*/}
+        {/*          ))}*/}
+        {/*        </Grid>*/}
+        {/*      ))}*/}
+        {/*    </Grid>*/}
+        {/*  </Grid>*/}
+        {/*</div>*/}
+
         <Button type="submit">Save</Button>
       </form>
     </div>

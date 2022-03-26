@@ -1,8 +1,7 @@
-import Player from "../player/model";
+import { Prisma } from '@prisma/client'
 
-export default interface Character {
-  id: number;
-  name: string;
-  playerId: number;
-  player?: Player;
-}
+const characterWithPlayer = Prisma.validator<Prisma.CharacterArgs>()({
+  include: { player: true },
+})
+
+export type CharacterWithPlayer = Prisma.CharacterGetPayload<typeof characterWithPlayer>

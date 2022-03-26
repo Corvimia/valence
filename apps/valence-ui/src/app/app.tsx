@@ -8,6 +8,7 @@ import { Sidebar } from "./features/core/sidebar";
 import { HomePage } from "./features/home/home-page";
 import { CharacterListPage } from "./features/character/character-list-page";
 import { PlayerListPage } from "./features/player/player-list-page";
+import { SkillListPage } from "./features/skill/skill-list-page";
 import { CharacterEditPage } from "./features/character/character-edit-page";
 import { CharacterCreatePage } from "./features/character/character-create-page";
 
@@ -28,6 +29,7 @@ export function App() {
               <Route path="/">
                 <Route path="" element={<HomePage />} />
                 <Route path="players" element={<PlayerListPage />} />
+                <Route path="skills" element={<SkillListPage />} />
                 <Route path="characters">
                   <Route path="" element={<CharacterListPage />} />
                   <Route path="new" element={<CharacterCreatePage />} />

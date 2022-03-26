@@ -19,16 +19,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import useSWR from "swr";
 import { api, fetcher } from "../../api";
-import Player from "../player/model";
-import Character from "./model";
 import { Link } from "react-router-dom";
+import { Character, Player } from "@prisma/client";
+import { CharacterWithPlayer } from "./model";
 
 export interface CharacterPageProps {
 }
 
 export const CharacterListPage: React.VFC<CharacterPageProps> = () => {
 
-  const { data: characters = [], mutate } = useSWR<Character[]>("/api/characters", fetcher);
+  const { data: characters = [], mutate } = useSWR<CharacterWithPlayer[]>("/api/characters", fetcher);
 
   const deleteCharacter = async (characterId: number) => {
     await mutate(async () => {

@@ -1,11 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useController, useForm } from "react-hook-form";
 import { api, fetcher } from "../../api";
-import Player from "../player/model";
 import useSWR, {} from "swr";
-import Character from "./model";
 import { Button, MenuItem, Select, TextField } from "@mui/material";
 import { useEffect } from "react";
+import { Character, Player } from "@prisma/client";
 
 export interface CharacterEditPageProps {
 }
@@ -40,8 +39,11 @@ export const CharacterCreatePage: React.VFC<CharacterEditPageProps> = (props) =>
     rules: { required: true }
   });
 
+  let navigate = useNavigate();
+
   const createCharacter = async (newCharacter: Character) => {
     const { data } = await api.post<Character>("/api/characters", newCharacter);
+    navigate(`../${data.id}`);
   };
 
 
