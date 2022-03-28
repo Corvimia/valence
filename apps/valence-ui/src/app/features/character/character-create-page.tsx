@@ -1,31 +1,26 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useController, useForm } from "react-hook-form";
 import { api, fetcher } from "../../api";
 import useSWR, {} from "swr";
 import { Button, MenuItem, Select, TextField } from "@mui/material";
-import { useEffect } from "react";
-import { Player } from "../player/model";
+import { Player, PlayerWithCharacters } from "../player/model";
 import { Character } from "./model";
+import PlayerCreateDialog from "../player/player-create-dialog";
+import React from "react";
 
 export interface CharacterEditPageProps {
 }
 
 export const CharacterCreatePage: React.VFC<CharacterEditPageProps> = (props) => {
-  const { id } = useParams();
 
-  const { data: players = [] } = useSWR<Player[]>("/api/players", fetcher);
+  const { data: players = [], mutate: mutatePlayers } = useSWR<Player[]>("/api/players", fetcher);
 
-  const { handleSubmit, reset, control, setValue } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     defaultValues: {
       id: 0,
       name: "",
       playerId: 0
     }
-  });
-
-  const idControl = useController({
-    name: "id",
-    control: control
   });
 
   const nameControl = useController({
@@ -40,12 +35,24 @@ export const CharacterCreatePage: React.VFC<CharacterEditPageProps> = (props) =>
     rules: { required: true }
   });
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const createCharacter = async (newCharacter: Character) => {
     const { data } = await api.post<Character>("/api/characters", newCharacter);
     navigate(`../${data.id}`);
   };
+
+  const onPlayerCreated = async (data: PlayerWithCharacters) => {
+    await mutatePlayers(() => [data], {
+      optimisticData: [...players],
+      rollbackOnError: true,
+      populateCache: newItem => {
+        return [...players, ...newItem];
+      },
+      revalidate: true
+    });
+    setValue("playerId", data.id);
+  }
 
 
   return (
@@ -71,6 +78,8 @@ export const CharacterCreatePage: React.VFC<CharacterEditPageProps> = (props) =>
             <MenuItem value={0}>None</MenuItem>
             {players?.map(player => <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>)}
           </Select>
+          or
+          <PlayerCreateDialog onPlayerChanged={onPlayerCreated}/>
         </div>
         <Button type="submit">Save</Button>
       </form>
