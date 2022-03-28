@@ -1,8 +1,14 @@
 {
   "$schema": "../../../../../node_modules/nx-electron/src/validation/maker.schema.json",
+  "productName": "Valence",
   "extraResources": [
     "prisma/test.db",
     "node_modules/.prisma/**/*",
-    "node_modules/@prisma/client/**/*"
+    "node_modules/@prisma/client/**/*",
+    {
+      "from": "dist/apps/valence-ui",
+      "to": "valence-ui",
+      "filter": ["**/*"]
+    }
   ]
 }

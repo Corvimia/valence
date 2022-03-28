@@ -1,5 +1,5 @@
 import { BrowserWindow, shell, screen } from 'electron';
-import { rendererAppName, rendererAppPort } from './constants';
+import { rendererAppName, apiAppPort } from './constants';
 import { environment } from '../environments/environment';
 import { join } from 'path';
 import { format } from 'url';
@@ -97,7 +97,7 @@ export default class App {
   private static loadMainWindow() {
     // load the index.html of the app.
     if (!App.application.isPackaged) {
-      App.mainWindow.loadURL(`http://localhost:${rendererAppPort}`);
+      App.mainWindow.loadURL(`http://localhost:${apiAppPort}`);
     } else {
       App.mainWindow.loadURL(
         format({

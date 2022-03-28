@@ -1,5 +1,5 @@
 import React, {} from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 
 
 import "./App.css";
@@ -22,7 +22,7 @@ export function App() {
   return (
     <>
       <ThemeProvider theme={darkTheme}>
-        <BrowserRouter>
+        <HashRouter>
           <Sidebar />
           <main>
             <Routes>
@@ -38,7 +38,7 @@ export function App() {
               </Route>
             </Routes>
           </main>
-        </BrowserRouter>
+        </HashRouter>
       </ThemeProvider>
     </>
   );

@@ -2,11 +2,13 @@
   "name": "valence",
   "version": "0.0.1",
   "license": "MIT",
+  "author": "Mia Lemoine",
+  "description": "Valence is a management tool for a Vampire LARP",
   "scripts": {
     "start": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-api\"",
     "electron": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-electron\"",
     "build": "nx build valence-ui && nx build valence-electron",
-    "package": "npm run build && nx make valence-electron"
+    "make": "npm run build && nx make valence-electron"
   },
   "private": true,
   "devDependencies": {
