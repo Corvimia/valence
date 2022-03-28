@@ -19,6 +19,13 @@ ipcMain.handle('get-app-version', (event) => {
   return environment.version;
 });
 
+// Retrieve app port
+ipcMain.handle('get-port', (event) => {
+  console.log(`Fetching port... [${process.env.port}]`);
+
+  return process.env.port;
+});
+
 // Handle App termination
 ipcMain.on('quit', (event, code) => {
   app.exit(code);

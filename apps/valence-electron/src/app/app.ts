@@ -1,8 +1,12 @@
-import { BrowserWindow, shell, screen } from 'electron';
-import { rendererAppName, apiAppPort } from './constants';
-import { environment } from '../environments/environment';
-import { join } from 'path';
-import { format } from 'url';
+import { BrowserWindow, shell, screen } from "electron";
+import { rendererAppName, apiAppPort, apiAppName } from "./constants";
+import { environment } from "../environments/environment";
+import { join } from "path";
+import { format } from "url";
+import { ChildProcess, fork } from "child_process";
+import * as net from "net";
+import { AddressInfo } from "net";
+
 
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
@@ -10,9 +14,10 @@ export default class App {
   static mainWindow: Electron.BrowserWindow;
   static application: Electron.App;
   static BrowserWindow;
+  public static apiServerProcess: ChildProcess;
 
   public static isDevelopmentMode() {
-    const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;
+    const isEnvironmentSet: boolean = "ELECTRON_IS_DEV" in process.env;
     const getFromEnvironment: boolean =
       parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
 
@@ -20,7 +25,8 @@ export default class App {
   }
 
   private static onWindowAllClosed() {
-    if (process.platform !== 'darwin') {
+    if (process.platform !== "darwin") {
+      App.apiServerProcess.kill();
       App.application.quit();
     }
   }
@@ -44,8 +50,15 @@ export default class App {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
-    App.initMainWindow();
-    App.loadMainWindow();
+    App.findPort().then(port => {
+      console.log("found port " + port);
+      process.env.port = port;
+      App.startApiServer();
+      App.initMainWindow();
+      setTimeout(() => {
+        App.loadMainWindow();
+      }, 1000);
+    });
   }
 
   private static onActivate() {
@@ -69,13 +82,13 @@ export default class App {
       webPreferences: {
         contextIsolation: true,
         backgroundThrottling: false,
-        preload: join(__dirname, 'preload.js'),
-      },
+        preload: join(__dirname, "preload.js")
+      }
     });
     App.mainWindow.center();
 
     // if main window is ready to show, close the splash window and show the main window
-    App.mainWindow.once('ready-to-show', () => {
+    App.mainWindow.once("ready-to-show", () => {
       App.mainWindow.show();
     });
 
@@ -86,7 +99,7 @@ export default class App {
     // });
 
     // Emitted when the window is closed.
-    App.mainWindow.on('closed', () => {
+    App.mainWindow.on("closed", () => {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
@@ -101,9 +114,9 @@ export default class App {
     } else {
       App.mainWindow.loadURL(
         format({
-          pathname: join(__dirname, '..', rendererAppName, 'index.html'),
-          protocol: 'file:',
-          slashes: true,
+          pathname: join(__dirname, "..", rendererAppName, "index.html"),
+          protocol: "file:",
+          slashes: true
         })
       );
     }
@@ -118,8 +131,28 @@ export default class App {
     App.BrowserWindow = browserWindow;
     App.application = app;
 
-    App.application.on('window-all-closed', App.onWindowAllClosed); // Quit when all windows are closed.
-    App.application.on('ready', App.onReady); // App is ready to load data
-    App.application.on('activate', App.onActivate); // App is activated
+    App.application.on("window-all-closed", App.onWindowAllClosed); // Quit when all windows are closed.
+    App.application.on("ready", App.onReady); // App is ready to load data
+    App.application.on("activate", App.onActivate); // App is activated
+  }
+
+  private static findPort(): Promise<string> {
+    return new Promise<string>((resolve: (string) => void) => {
+      const server = net.createServer();
+      server.unref().listen(0, () => {
+        const port = (server.address() as AddressInfo).port;
+        server.close(() => {
+          resolve(port);
+        });
+      });
+    }).catch(() => {
+      console.log("Error finding a port");
+      return '';
+    });
+  }
+
+  private static startApiServer(): void {
+    console.log("startApiServer");
+    App.apiServerProcess = fork(`${__dirname}/../../${apiAppName}/main.js`);
   }
 }
