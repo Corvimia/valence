@@ -13,7 +13,7 @@
         "compiler": "babel",
         "outputPath": "dist/apps/valence-ui",
         "index": "apps/valence-ui/src/index.html",
-        "baseHref": "./",
+        "baseHref": "/",
         "main": "apps/valence-ui/src/main.tsx",
         "polyfills": "apps/valence-ui/src/polyfills.ts",
         "tsConfig": "apps/valence-ui/tsconfig.app.json",
