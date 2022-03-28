@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Query } from "express-serve-static-core";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,19 +13,35 @@ const list: RequestHandler = async (req, res) => {
   res.send(characters);
 };
 
+function getIncludes(query: Query): Prisma.CharacterInclude {
+  const include: Prisma.CharacterInclude = {};
+  switch (query.includes) {
+    case "true":
+      include.player = true;
+      include.characterSkills = {
+        include: {
+          skill: true,
+        },
+      };
+      break;
+  }
+  return include;
+}
+
 const get: RequestHandler = async (req, res) => {
+  const include = getIncludes(req.query);
+
   const character = await prisma.character.findFirst({
     where: {
       id: Number(req.params.characterId),
     },
-    include: {
-      player: true,
-    },
+    include,
   });
   res.send(character);
 };
 
 const create: RequestHandler = async (req, res) => {
+
   const character = await prisma.character.create({
     data: {
       name: req.body.name,
@@ -35,6 +52,28 @@ const create: RequestHandler = async (req, res) => {
       },
     },
   });
+
+  const skills = await prisma.skill.findMany();
+
+  await Promise.all(
+    skills.map((skill) => {
+      return prisma.characterSkill.create({
+        data: {
+          level: 0,
+          character: {
+            connect: {
+              id: character.id,
+            },
+          },
+          skill: {
+            connect: {
+              id: skill.id,
+            },
+          },
+        },
+      });
+    })
+  );
 
   res.send(character);
 };

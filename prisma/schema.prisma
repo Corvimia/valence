@@ -12,7 +12,7 @@ model Character {
   name   String
   playerId Int
   player Player @relation(fields: [playerId], references: [id])
-  skills Skill[]
+  characterSkills CharacterSkill[]
 }
 
 model Player {
@@ -24,5 +24,16 @@ model Player {
 model Skill {
   id   Int    @id @default(autoincrement())
   name String
-  characters Character[]
+  characterSkills CharacterSkill[]
 }
+
+model CharacterSkill {
+  id   Int    @id @default(autoincrement())
+  skillId Int
+  skill Skill @relation(fields: [skillId], references: [id])
+  characterId Int
+  character Character @relation(fields: [characterId], references: [id])
+  level Int
+}
+
+

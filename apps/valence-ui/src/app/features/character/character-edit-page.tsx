@@ -4,13 +4,8 @@ import { api, fetcher } from "../../api";
 import useSWR, {} from "swr";
 import { Button, Grid, MenuItem, Select, TextField } from "@mui/material";
 import { useEffect } from "react";
-import { Character, CharacterWithPlayer } from "./model";
-
-const attributes = [
-  ["intelligence", "strength", "presence"],
-  ["wits", "dexterity", "manipulation"],
-  ["resolve", "stamina", "composure"],
-]
+import { Character, CharacterWithIncludes, CharacterWithPlayer } from "./model";
+import { Skill } from "../skill/model";
 
 export interface CharacterEditPageProps {
 }
@@ -19,9 +14,11 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
   const { id } = useParams();
 
   const {
-    data: character = {} as CharacterWithPlayer,
+    data: character = {} as CharacterWithIncludes,
     mutate
-  } = useSWR<CharacterWithPlayer>(`/api/characters/${id}`, fetcher);
+  } = useSWR<CharacterWithIncludes>(`/api/characters/${id}?includes=true`, fetcher);
+
+  const { data: skills = [] } = useSWR<Skill[]>(`/api/skills`, fetcher);
 
   useEffect(() => {
     setValue("id", character?.id);
@@ -29,17 +26,12 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
     setValue("playerId", character?.playerId);
   }, [character]);
 
-  const { handleSubmit, reset, control, setValue } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     defaultValues: {
       id: 0,
       name: "",
       playerId: 0
     }
-  });
-
-  const idControl = useController({
-    name: "id",
-    control: control
   });
 
   const nameControl = useController({
@@ -48,15 +40,9 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
     rules: { required: true }
   });
 
-  const playerControl = useController({
-    name: "playerId",
-    control: control,
-    rules: { required: true }
-  });
-
   const updateCharacter = async (newCharacter: Character) => {
     await mutate(async () => {
-      const { data } = await api.put<CharacterWithPlayer>(`/api/characters/${newCharacter.id}`, newCharacter);
+      const { data } = await api.put<CharacterWithIncludes>(`/api/characters/${newCharacter.id}?includes=true`, newCharacter);
 
       return data;
     }, {
@@ -84,28 +70,22 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
             onChange={nameControl.field.onChange}
           />
         </div>
+        <hr/>
 
-        {/*<div>*/}
-        {/*  <h3>Attributes</h3>*/}
-        {/*  <Grid container>*/}
-        {/*    <Grid item>*/}
-        {/*      {attributes.map(row => (*/}
-        {/*        <Grid container key={`${row}`}>*/}
-        {/*          {row.map(attribute => (*/}
-        {/*            <Grid item xs={4} key={attribute}>*/}
-        {/*              <TextField*/}
-        {/*                label={attribute}*/}
-        {/*                variant="filled"*/}
-        {/*                type="number"*/}
-        {/*              />*/}
-        {/*            </Grid>*/}
-        {/*          ))}*/}
-        {/*        </Grid>*/}
-        {/*      ))}*/}
-        {/*    </Grid>*/}
-        {/*  </Grid>*/}
-        {/*</div>*/}
-
+        <h3>Skills</h3>
+        {
+          character.characterSkills?.map(({ level, skill }) => (
+            <div key={skill.id}>
+              <TextField
+                label={skill.name}
+                variant="filled"
+                type="number"
+                value={level}
+              />
+            </div>
+          ))
+        }
+        <hr/>
         <Button type="submit">Save</Button>
       </form>
     </div>
