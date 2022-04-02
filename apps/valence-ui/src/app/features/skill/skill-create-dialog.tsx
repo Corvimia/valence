@@ -6,19 +6,21 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  MenuItem,
+  Select,
   TextField,
 } from '@mui/material';
 import { useController, useForm } from 'react-hook-form';
-import { Player, PlayerWithCharacters } from './model';
+import { Skill, SkillType } from './model';
 import { api } from '../../api';
 import { useDialog } from '../core/hooks/use-dialog';
 
-export interface PlayerCreateDialogProps {
-  onPlayerChanged: (player: PlayerWithCharacters) => Promise<void>;
+export interface SkillCreateDialogProps {
+  onSkillChanged: (skill: Skill) => Promise<void>;
 }
 
-export const PlayerCreateDialog: React.VFC<PlayerCreateDialogProps> = ({
-  onPlayerChanged,
+export const SkillCreateDialog: React.VFC<SkillCreateDialogProps> = ({
+  onSkillChanged,
 }) => {
   const { handleSubmit, reset, control } = useForm({
     defaultValues: {
@@ -33,34 +35,19 @@ export const PlayerCreateDialog: React.VFC<PlayerCreateDialogProps> = ({
     rules: { required: true },
   });
 
-  const idControl = useController({
-    name: 'id',
+  const typeControl = useController({
+    name: 'type',
     control: control,
+    defaultValue: SkillType.basic,
+    rules: { required: true },
   });
 
   const [isOpen, openDialog, closeDialog] = useDialog(reset);
 
-  const updatePlayer = async (player: Player) => {
-    const { data } = await api.put<PlayerWithCharacters>(
-      `/api/players/${player.id}`,
-      player
-    );
+  const createSkill = async (skill: Skill) => {
+    const { data } = await api.post<Skill>('/api/skills', skill);
 
-    await onPlayerChanged(data);
-
-    closeDialog();
-  };
-
-  const createPlayer = async (player: Player) => {
-    if (player.id) {
-      return updatePlayer(player);
-    }
-    const { data } = await api.post<PlayerWithCharacters>(
-      '/api/players',
-      player
-    );
-
-    await onPlayerChanged(data);
+    await onSkillChanged(data);
 
     closeDialog();
   };
@@ -68,13 +55,13 @@ export const PlayerCreateDialog: React.VFC<PlayerCreateDialogProps> = ({
   return (
     <>
       <Button variant="outlined" onClick={openDialog}>
-        Add Player
+        Add Skill
       </Button>
       <Dialog open={isOpen} onClose={closeDialog}>
-        <form onSubmit={handleSubmit(createPlayer)}>
-          <DialogTitle>New Player</DialogTitle>
+        <form onSubmit={handleSubmit(createSkill)}>
+          <DialogTitle>New Skill</DialogTitle>
           <DialogContent>
-            <DialogContentText>Create a new player</DialogContentText>
+            <DialogContentText>Create a new skill</DialogContentText>
 
             <TextField
               label="Name"
@@ -82,12 +69,22 @@ export const PlayerCreateDialog: React.VFC<PlayerCreateDialogProps> = ({
               value={nameControl.field.value}
               onChange={nameControl.field.onChange}
             />
+            <br />
+            <Select
+              value={typeControl.field.value}
+              label="Type"
+              onChange={typeControl.field.onChange}
+            >
+              {Object.keys(SkillType)?.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
           </DialogContent>
           <DialogActions>
             <Button onClick={closeDialog}>Cancel</Button>
-            <Button type="submit">
-              {idControl.field.value ? 'Update' : 'Create'}
-            </Button>
+            <Button type="submit">Create</Button>
           </DialogActions>
         </form>
       </Dialog>
@@ -95,4 +92,4 @@ export const PlayerCreateDialog: React.VFC<PlayerCreateDialogProps> = ({
   );
 };
 
-export default PlayerCreateDialog;
+export default SkillCreateDialog;
