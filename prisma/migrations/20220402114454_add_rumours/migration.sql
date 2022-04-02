@@ -1,0 +1,8 @@
+-- CreateTable
+CREATE TABLE "Rumour" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "text" TEXT NOT NULL,
+    "threshold" INTEGER NOT NULL,
+    "skillId" INTEGER NOT NULL,
+    CONSTRAINT "Rumour_skillId_fkey" FOREIGN KEY ("skillId") REFERENCES "Skill" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
