@@ -1,6 +1,6 @@
-import { RequestHandler } from "express";
-import { Query } from "express-serve-static-core";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { RequestHandler } from 'express';
+import { Query } from 'express-serve-static-core';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -16,7 +16,7 @@ const list: RequestHandler = async (req, res) => {
 function getIncludes(query: Query): Prisma.CharacterInclude {
   const include: Prisma.CharacterInclude = {};
   switch (query.includes) {
-    case "true":
+    case 'true':
       include.player = true;
       include.characterSkills = {
         include: {
@@ -41,7 +41,6 @@ const get: RequestHandler = async (req, res) => {
 };
 
 const create: RequestHandler = async (req, res) => {
-
   const character = await prisma.character.create({
     data: {
       name: req.body.name,
@@ -79,7 +78,6 @@ const create: RequestHandler = async (req, res) => {
 };
 
 const replace: RequestHandler = async (req, res) => {
-
   const character = await prisma.character.update({
     where: {
       id: parseInt(req.body.id, 10),
@@ -89,16 +87,82 @@ const replace: RequestHandler = async (req, res) => {
     },
   });
 
+  const characterSkillsDto = req.body.skills.map((skill) => ({
+    id: parseInt(skill.id, 10),
+    level: parseInt(skill.level, 10),
+  }));
+
+  const characterSkillIds = characterSkillsDto.map((skill) => skill.id);
+
+  // delete removed skills
+  await prisma.characterSkill.deleteMany({
+    where: {
+      characterId: character.id,
+      skillId: {
+        notIn: characterSkillIds,
+      },
+    },
+  });
+
+  // update existing skills
+  for (const skill of characterSkillsDto) {
+    await prisma.characterSkill.updateMany({
+      where: {
+        characterId: character.id,
+        skillId: skill.id,
+      },
+      data: {
+        level: skill.level,
+      },
+    });
+  }
+
+  // add new skills
+  const existingCharacterSkills = await prisma.characterSkill.findMany({
+    where: {
+      character: {
+        id: character.id,
+      },
+    },
+    include: {
+      skill: true,
+    },
+  });
+
+  const existingCharacterSkillIds = existingCharacterSkills.map(
+    (characterSkill) => characterSkill.skill.id
+  );
+
+  await Promise.all(
+    characterSkillsDto
+      .filter(({ id }) => !existingCharacterSkillIds.includes(id))
+      .map((skillDto) => {
+        return prisma.characterSkill.create({
+          data: {
+            level: skillDto.level,
+            character: {
+              connect: {
+                id: character.id,
+              },
+            },
+            skill: {
+              connect: {
+                id: skillDto.id,
+              },
+            },
+          },
+        });
+      })
+  );
 
   res.send(character);
 };
 
 const remove: RequestHandler = async (req, res) => {
-
   await prisma.character.delete({
     where: {
-      id: parseInt(req.params.characterId, 10)
-    }
+      id: parseInt(req.params.characterId, 10),
+    },
   });
 
   return res.status(204).send();
@@ -109,5 +173,5 @@ export default {
   get,
   create,
   replace,
-  remove
+  remove,
 };

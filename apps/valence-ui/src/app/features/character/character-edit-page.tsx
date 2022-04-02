@@ -1,57 +1,77 @@
-import { useParams } from "react-router-dom";
-import { useController, useForm } from "react-hook-form";
-import { api, fetcher } from "../../api";
-import useSWR, {} from "swr";
-import { Button, Grid, MenuItem, Select, TextField } from "@mui/material";
-import { useEffect } from "react";
-import { Character, CharacterWithIncludes, CharacterWithPlayer } from "./model";
-import { Skill } from "../skill/model";
+import { useParams } from 'react-router-dom';
+import { useController, useFieldArray, useForm } from 'react-hook-form';
+import { api, fetcher } from '../../api';
+import useSWR from 'swr';
+import { Button, TextField } from '@mui/material';
+import { useEffect } from 'react';
+import { CharacterCreateDto, CharacterWithIncludes } from './model';
+import { Skill, SkillType } from '../skill/model';
 
-export interface CharacterEditPageProps {
-}
+export interface CharacterEditPageProps {}
 
 export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
   const { id } = useParams();
 
-  const {
-    data: character = {} as CharacterWithIncludes,
-    mutate
-  } = useSWR<CharacterWithIncludes>(`/api/characters/${id}?includes=true`, fetcher);
+  const { data: character = {} as CharacterWithIncludes, mutate } =
+    useSWR<CharacterWithIncludes>(
+      `/api/characters/${id}?includes=true`,
+      fetcher
+    );
 
   const { data: skills = [] } = useSWR<Skill[]>(`/api/skills`, fetcher);
 
   useEffect(() => {
-    setValue("id", character?.id);
-    setValue("name", character?.name);
-    setValue("playerId", character?.playerId);
+    setValue('id', character?.id);
+    setValue('name', character?.name);
+    setValue('playerId', character?.playerId);
+    setValue(
+      'skills',
+      character.characterSkills?.map((cs) => ({
+        id: cs.skill.id,
+        level: cs.level,
+      }))
+    );
   }, [character]);
 
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, control, setValue, register } = useForm({
     defaultValues: {
       id: 0,
-      name: "",
-      playerId: 0
-    }
+      name: '',
+      playerId: 0,
+    },
   });
 
   const nameControl = useController({
-    name: "name",
+    name: 'name',
     control: control,
-    rules: { required: true }
+    rules: { required: true },
   });
 
-  const updateCharacter = async (newCharacter: Character) => {
-    await mutate(async () => {
-      const { data } = await api.put<CharacterWithIncludes>(`/api/characters/${newCharacter.id}?includes=true`, newCharacter);
+  const skillControl = useFieldArray({
+    name: 'skills',
+    control,
+    rules: { required: true },
+  });
 
-      return data;
-    }, {
-      rollbackOnError: true,
-      populateCache: newItem => {
-        return newItem;
+  const updateCharacter = async (newCharacter: CharacterCreateDto) => {
+    console.log({ newCharacter });
+    await mutate(
+      async () => {
+        const { data } = await api.put<CharacterWithIncludes>(
+          `/api/characters/${newCharacter.id}?includes=true`,
+          newCharacter
+        );
+
+        return data;
       },
-      revalidate: true
-    });
+      {
+        rollbackOnError: true,
+        populateCache: (newItem) => {
+          return newItem;
+        },
+        revalidate: true,
+      }
+    );
   };
 
   return (
@@ -59,9 +79,7 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
       <h1>Edit {nameControl.field.value}</h1>
       <form onSubmit={handleSubmit(updateCharacter)}>
         <div>
-          <p>
-            Player: {character?.player?.name}
-          </p>
+          <p>Player: {character?.player?.name}</p>
 
           <TextField
             label="Name"
@@ -70,22 +88,31 @@ export const CharacterEditPage: React.VFC<CharacterEditPageProps> = (props) => {
             onChange={nameControl.field.onChange}
           />
         </div>
-        <hr/>
+        <hr />
+
+        <h3>Attributes</h3>
+        <p>In Progress...</p>
+        <hr />
 
         <h3>Skills</h3>
-        {
-          character.characterSkills?.map(({ level, skill }) => (
+        {skills
+          .filter((skill) => skill.type === SkillType.basic)
+          .map((skill, index) => (
             <div key={skill.id}>
               <TextField
                 label={skill.name}
                 variant="filled"
                 type="number"
-                value={level}
+                {...register(`skills.[${index}].level`)}
+              />
+              <input
+                type="hidden"
+                value={skill.id}
+                {...register(`skills.[${index}].id`)}
               />
             </div>
-          ))
-        }
-        <hr/>
+          ))}
+        <hr />
         <Button type="submit">Save</Button>
       </form>
     </div>
