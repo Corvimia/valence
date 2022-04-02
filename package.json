@@ -9,7 +9,7 @@
     "electron": "concurrently -k \"nx serve valence-ui\" \"nx serve valence-electron\"",
     "version:patch": "npm --no-git-tag-version version patch",
     "build": "nx build valence-ui --baseHref='./' && nx build valence-electron",
-    "make": "npm run version:patch && npm run build && nx make valence-electron"
+    "make": "npm run build && nx make valence-electron"
   },
   "private": true,
   "devDependencies": {
