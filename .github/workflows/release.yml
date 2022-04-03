@@ -1,0 +1,41 @@
+name: ReleaseCI
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: get version
+        run: |
+          $VERSION=git describe --tags
+          echo "VERSION=$VERSION" >> $env:GITHUB_ENV
+          $VERSION_NO_V=$VERSION.Substring(1)
+          echo "VERSION_NO_V=$VERSION_NO_V" >> $env:GITHUB_ENV
+
+      - run: npm version "${{ env.VERSION }}" --no-git-tag-version
+
+      - run: npm ci
+
+      - run: npm run make
+        name: Package and Make
+
+      - run: ls ./dist/executables/
+
+      - name: Release with Notes
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/executables/Valence Setup ${{ env.VERSION_NO_V }}.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
